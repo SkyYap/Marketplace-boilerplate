@@ -1,0 +1,14 @@
+{
+    "united": {
+        "name": "United MileagePlus",
+        "login_url": "https://www.united.com/en/us",
+        "dashboard_url": "https://www.united.com/en/us/myunited",
+        "item_type": "AIRMILES",
+        "selectors": {
+            "username": "",
+            "password": "",
+            "submit": "",
+            "balance": ""
+        }
+    }
+}
