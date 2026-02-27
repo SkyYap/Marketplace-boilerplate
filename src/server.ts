@@ -11,6 +11,8 @@ import ordersRouter from './routes/orders';
 import sellRouter from './routes/sell';
 import callbackRouter from './routes/callback';
 import listingsRouter from './routes/listings';
+import callbackTransferRouter from './routes/callback-transfer';
+import buyerRouter from './routes/buyer';
 import { startEscrowListener } from './services/escrowListener';
 
 const app = express();
@@ -19,19 +21,23 @@ const app = express();
 app.use(helmet());
 app.use(cors());
 
-// Callback route needs raw body — mount BEFORE urlencoded parser
-// Reclaim sends JSON as x-www-form-urlencoded which breaks Express's parser
-app.use('/callback', express.raw({ type: '*/*' }), callbackRouter);
+// Reclaim callback needs raw body — mount with raw parser on /callback path
+app.use('/callback/reclaim', express.raw({ type: '*/*' }));
+app.use('/callback', callbackRouter);
 
 app.use(express.json());
 app.use(express.text());
 app.use(express.urlencoded({ extended: true }));
+
+// Transfer callback from EigenCompute (needs JSON parser, mounted after)
+app.use('/callback', callbackTransferRouter);
 
 // ─── Routes ───────────────────────────────────────────────
 app.use('/health', healthRouter);
 app.use('/orders', ordersRouter);
 app.use('/sell', sellRouter);
 app.use('/listings', listingsRouter);
+app.use('/buyer', buyerRouter);
 
 // GET /providers — list available providers
 app.get('/providers', (_req, res) => {

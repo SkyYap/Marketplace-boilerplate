@@ -22,4 +22,8 @@ export const config = {
     rpcUrl: process.env.RPC_URL || 'https://sepolia.base.org',
     escrowContract: process.env.ESCROW_CONTRACT || '',
     sellerWallet: process.env.SELLER_WALLET || '',
+    adminPrivateKey: process.env.ADMIN_PRIVATE_KEY || '',
+
+    // EigenCompute TEE
+    eigencomputeUrl: process.env.EIGENCOMPUTE_URL || 'http://localhost:4000',
 };

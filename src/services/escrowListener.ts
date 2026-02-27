@@ -1,6 +1,7 @@
 import Web3 from 'web3';
 import { config } from '../config';
 import { getListings, escrowOrder } from '../db/queries';
+import { triggerTransfer } from './transferService';
 
 // ABI — only the Deposited event is needed
 const ESCROW_ABI = [
@@ -112,5 +113,6 @@ async function handleDepositedEvent(event: any, web3: Web3): Promise<void> {
     console.log(`[EscrowListener]    Next: EigenCompute will process the miles transfer`);
     console.log(`[EscrowListener] ───────────────────────────────────────`);
 
-    // TODO: Trigger EigenCompute to transfer miles
+    // Trigger EigenCompute TEE to transfer miles
+    triggerTransfer(orderId);
 }

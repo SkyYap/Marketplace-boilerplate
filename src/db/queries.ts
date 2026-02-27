@@ -11,8 +11,8 @@ export function createOrder(params: CreateOrderParams): Order {
     const now = new Date().toISOString();
 
     db.prepare(`
-    INSERT INTO orders (id, item_type, provider_id, username, amount, price, status, proof_id, error_msg, created_at, updated_at)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO orders (id, item_type, provider_id, username, amount, price, status, proof_id, error_msg, encrypted_creds, created_at, updated_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `).run(
         id,
         params.item_type,
@@ -23,6 +23,7 @@ export function createOrder(params: CreateOrderParams): Order {
         params.status ?? 'PENDING',
         params.proof_id ?? null,
         params.error_msg ?? null,
+        params.encrypted_creds ?? null,
         now,
         now
     );
@@ -112,6 +113,49 @@ export function escrowOrder(
     SET status = 'ESCROWED', buyer_address = ?, buyer_departure = ?, buyer_destination = ?, escrow_tx = ?, updated_at = ?
     WHERE id = ? AND status = 'LISTED'
   `).run(buyerAddress, departure, destination, escrowTx, now, id);
+}
+
+// ─── Phase 3: Transfer ────────────────────────────────────
+
+export function transferOrder(id: string): void {
+    const db = getDb();
+    const now = new Date().toISOString();
+    db.prepare(`
+    UPDATE orders SET status = 'TRANSFERRING', updated_at = ?
+    WHERE id = ? AND status = 'ESCROWED'
+  `).run(now, id);
+}
+
+export function completeTransfer(
+    id: string,
+    confirmationCode: string,
+    ticketDetails: string
+): void {
+    const db = getDb();
+    const now = new Date().toISOString();
+    db.prepare(`
+    UPDATE orders
+    SET status = 'TRANSFERRED', confirmation_code = ?, ticket_details = ?, updated_at = ?
+    WHERE id = ? AND status = 'TRANSFERRING'
+  `).run(confirmationCode, ticketDetails, now, id);
+}
+
+export function approveOrder(id: string): void {
+    const db = getDb();
+    const now = new Date().toISOString();
+    db.prepare(`
+    UPDATE orders SET status = 'COMPLETED', updated_at = ?
+    WHERE id = ? AND status = 'TRANSFERRED'
+  `).run(now, id);
+}
+
+export function disputeOrder(id: string): void {
+    const db = getDb();
+    const now = new Date().toISOString();
+    db.prepare(`
+    UPDATE orders SET status = 'DISPUTED', updated_at = ?
+    WHERE id = ? AND status = 'TRANSFERRED'
+  `).run(now, id);
 }
 
 // ─── Proofs ──────────────────────────────────────────────

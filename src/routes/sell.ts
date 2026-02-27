@@ -36,13 +36,13 @@ function getProofProvider(): ProofGenerator {
  */
 router.post('/airmiles', async (req: Request, res: Response) => {
     try {
-        const { provider: providerId, username, listing_price } = req.body;
+        const { provider: providerId, username, password, listing_price } = req.body;
 
-        // Validate input — password no longer needed
-        if (!providerId || !username) {
+        // Validate input
+        if (!providerId || !username || !password) {
             return res.status(400).json({
                 error: 'INVALID_INPUT',
-                message: 'provider and username are required',
+                message: 'provider, username, and password are required',
             });
         }
 
@@ -68,6 +68,11 @@ router.post('/airmiles', async (req: Request, res: Response) => {
             });
         }
 
+        // Encrypt password for TEE
+        // TODO: Replace with TEE public key encryption (RSA/ECIES)
+        // For now, use Base64 encoding as placeholder
+        const encryptedCreds = Buffer.from(JSON.stringify({ username, password })).toString('base64');
+
         // Create pending order
         const order = createOrder({
             item_type: 'AIRMILES',
@@ -76,6 +81,7 @@ router.post('/airmiles', async (req: Request, res: Response) => {
             amount: 0,
             price: listing_price,
             status: 'PENDING',
+            encrypted_creds: encryptedCreds,
         });
         console.log(`[Sell] Created order: ${order.id}`);
 
