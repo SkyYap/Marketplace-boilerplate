@@ -69,6 +69,51 @@ export function getOrders(filters: { status?: string; provider_id?: string } = {
     return db.prepare(query).all(...params) as Order[];
 }
 
+// ─── Listings ─────────────────────────────────────────────
+
+export function listOrder(id: string, pricePerMile: number, minMiles: number): void {
+    const db = getDb();
+    const now = new Date().toISOString();
+    db.prepare(`
+    UPDATE orders SET status = 'LISTED', price_per_mile = ?, min_miles = ?, updated_at = ?
+    WHERE id = ? AND status = 'VERIFIED'
+  `).run(pricePerMile, minMiles, now, id);
+}
+
+export function getListings(filters: { provider_id?: string; max_price?: number } = {}): Order[] {
+    const db = getDb();
+    let query = `SELECT * FROM orders WHERE status = 'LISTED'`;
+    const params: any[] = [];
+
+    if (filters.provider_id) {
+        query += ' AND provider_id = ?';
+        params.push(filters.provider_id);
+    }
+    if (filters.max_price) {
+        query += ' AND price_per_mile <= ?';
+        params.push(filters.max_price);
+    }
+
+    query += ' ORDER BY price_per_mile ASC';
+    return db.prepare(query).all(...params) as Order[];
+}
+
+export function escrowOrder(
+    id: string,
+    buyerAddress: string,
+    departure: string,
+    destination: string,
+    escrowTx: string
+): void {
+    const db = getDb();
+    const now = new Date().toISOString();
+    db.prepare(`
+    UPDATE orders
+    SET status = 'ESCROWED', buyer_address = ?, buyer_departure = ?, buyer_destination = ?, escrow_tx = ?, updated_at = ?
+    WHERE id = ? AND status = 'LISTED'
+  `).run(buyerAddress, departure, destination, escrowTx, now, id);
+}
+
 // ─── Proofs ──────────────────────────────────────────────
 
 export function createProof(params: {

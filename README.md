@@ -1,43 +1,66 @@
-# marketplace-boilerplate
+## Foundry
 
-## Development
+**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
 
-### Setup & Local Testing
-```bash
-npm install
-cp .env.example .env
-npm run dev
+Foundry consists of:
+
+- **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
+- **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
+- **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
+- **Chisel**: Fast, utilitarian, and verbose solidity REPL.
+
+## Documentation
+
+https://book.getfoundry.sh/
+
+## Usage
+
+### Build
+
+```shell
+$ forge build
 ```
 
-### Docker Testing
-```bash
-docker build -t my-app .
-docker run --rm --env-file .env my-app
+### Test
+
+```shell
+$ forge test
 ```
 
-## Prerequisites
+### Format
 
-Before deploying, you'll need:
-
-- **Docker** - To package and publish your application image
-- **ETH** - To pay for deployment transactions
-
-## Deployment
-
-```bash
-ecloud compute app deploy username/image-name
+```shell
+$ forge fmt
 ```
 
-The CLI will automatically detect the `Dockerfile` and build your app before deploying.
+### Gas Snapshots
 
-## Management & Monitoring
+```shell
+$ forge snapshot
+```
 
-```bash
-ecloud compute app list                    # List all apps
-ecloud compute app info [app-name]         # Get app details
-ecloud compute app logs [app-name]         # View logs
-ecloud compute app start [app-name]        # Start stopped app
-ecloud compute app stop [app-name]         # Stop running app
-ecloud compute app terminate [app-name]    # Terminate app
-ecloud compute app upgrade [app-name] [image] # Update deployment
+### Anvil
+
+```shell
+$ anvil
+```
+
+### Deploy
+
+```shell
+$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
+```
+
+### Cast
+
+```shell
+$ cast <subcommand>
+```
+
+### Help
+
+```shell
+$ forge --help
+$ anvil --help
+$ cast --help
 ```

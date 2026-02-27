@@ -10,6 +10,8 @@ import healthRouter from './routes/health';
 import ordersRouter from './routes/orders';
 import sellRouter from './routes/sell';
 import callbackRouter from './routes/callback';
+import listingsRouter from './routes/listings';
+import { startEscrowListener } from './services/escrowListener';
 
 const app = express();
 
@@ -29,6 +31,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/health', healthRouter);
 app.use('/orders', ordersRouter);
 app.use('/sell', sellRouter);
+app.use('/listings', listingsRouter);
 
 // GET /providers — list available providers
 app.get('/providers', (_req, res) => {
@@ -66,10 +69,15 @@ function start() {
         console.log(`[Server] Health:       http://localhost:${config.port}/health`);
         console.log(`[Server] Providers:    http://localhost:${config.port}/providers`);
         console.log(`[Server] Orders:       http://localhost:${config.port}/orders`);
+        console.log(`[Server] Listings:     http://localhost:${config.port}/listings`);
         console.log(`[Server] Sell:         POST http://localhost:${config.port}/sell/airmiles`);
         console.log(`[Server] Callback:     POST http://localhost:${config.port}/callback/reclaim`);
         console.log(`[Server] Proof provider: ${config.proofProvider}`);
         console.log(`[Server] Callback URL:   ${config.callbackBaseUrl}`);
+        console.log(`[Server] Escrow contract: ${config.escrowContract || '(not set)'}`);
+
+        // Start on-chain event listener
+        startEscrowListener();
     });
 }
 

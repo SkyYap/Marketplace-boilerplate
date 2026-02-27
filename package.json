@@ -16,7 +16,8 @@
     "express": "^5.2.1",
     "helmet": "^8.1.0",
     "uuid": "^13.0.0",
-    "viem": "^2.0.0"
+    "viem": "^2.0.0",
+    "web3": "^4.16.0"
   },
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.13",

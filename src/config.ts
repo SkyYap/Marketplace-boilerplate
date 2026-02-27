@@ -17,4 +17,9 @@ export const config = {
 
     // Callback URL (public URL where Reclaim sends proofs)
     callbackBaseUrl: process.env.CALLBACK_BASE_URL || 'http://localhost:3000',
+
+    // On-chain escrow (Base Sepolia)
+    rpcUrl: process.env.RPC_URL || 'https://sepolia.base.org',
+    escrowContract: process.env.ESCROW_CONTRACT || '',
+    sellerWallet: process.env.SELLER_WALLET || '',
 };

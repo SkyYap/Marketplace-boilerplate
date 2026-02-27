@@ -1,5 +1,5 @@
 export type ItemType = 'AIRMILES' | 'GIFT_CARD' | 'API_KEY';
-export type OrderStatus = 'PENDING' | 'VERIFIED' | 'FAILED' | 'LISTED' | 'SOLD';
+export type OrderStatus = 'PENDING' | 'VERIFIED' | 'FAILED' | 'LISTED' | 'ESCROWED' | 'COMPLETED' | 'REFUNDED';
 
 export interface Order {
     id: string;
@@ -8,6 +8,12 @@ export interface Order {
     username: string;
     amount: number;
     price: number | null;
+    price_per_mile: number | null;
+    min_miles: number | null;
+    buyer_address: string | null;
+    buyer_departure: string | null;
+    buyer_destination: string | null;
+    escrow_tx: string | null;
     status: OrderStatus;
     proof_id: string | null;
     error_msg: string | null;
